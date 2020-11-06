@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace TransportPlanner.Models
@@ -13,7 +14,14 @@ namespace TransportPlanner.Models
         /// Network Groups Journeys 
         /// </summary>
         public int NetworkId { get; private set; }
-        public int Step { get; set; }
+        public int Order { get; set; }
         public int RouteId { get; set; }
+
+        public Journey(int networkId, int order, int routeId)
+        {
+            NetworkId = networkId;
+            Order = order;
+            RouteId = routeId;
+        }
     }
 }
