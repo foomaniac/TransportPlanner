@@ -38,7 +38,7 @@ namespace TransportPlanner.Tests
             //Act
             foreach (var wayPoint in journeyTimeRequest.RouteWayPoints)
             {
-                isValidRoute = _fixture.WayPoints.Any(wp => wp.FromPortId == wayPoint.FromPortId && wp.ToPortId == wayPoint.ToPortId);
+                isValidRoute = _fixture.Routes.Any(wp => wp.StartPortId == wayPoint.FromPortId && wp.DestinationPortId == wayPoint.ToPortId);
                 if (!isValidRoute) break;
             }
 
@@ -63,10 +63,10 @@ namespace TransportPlanner.Tests
             //Act
             foreach (var wayPoint in journeyTimeRequest.RouteWayPoints)
             {
-                var matchingWayPoint = _fixture.WayPoints.FirstOrDefault(wp => wp.FromPortId == wayPoint.FromPortId && wp.ToPortId == wayPoint.ToPortId);
+                var matchingWayPoint = _fixture.Routes.FirstOrDefault(wp => wp.StartPortId == wayPoint.FromPortId && wp.DestinationPortId == wayPoint.ToPortId);
                 if(matchingWayPoint != null)
                 {
-                    journeyTimeResponse += matchingWayPoint.DaysTravelTime;
+                    journeyTimeResponse += matchingWayPoint.DaysDuration;
                 }                
             }
 
@@ -92,10 +92,10 @@ namespace TransportPlanner.Tests
             //Act
             foreach (var wayPoint in journeyTimeRequest.RouteWayPoints)
             {
-                var matchingWayPoint = _fixture.WayPoints.FirstOrDefault(wp => wp.FromPortId == wayPoint.FromPortId && wp.ToPortId == wayPoint.ToPortId);
+                var matchingWayPoint = _fixture.Routes.FirstOrDefault(wp => wp.StartPortId == wayPoint.FromPortId && wp.DestinationPortId == wayPoint.ToPortId);
                 if (matchingWayPoint != null)
                 {
-                    journeyTimeResponse += matchingWayPoint.DaysTravelTime;
+                    journeyTimeResponse += matchingWayPoint.DaysDuration;
                 }
             }
 
@@ -124,10 +124,10 @@ namespace TransportPlanner.Tests
             //Act
             foreach (var wayPoint in journeyTimeRequest.RouteWayPoints)
             {
-                var matchingWayPoint = _fixture.WayPoints.FirstOrDefault(wp => wp.FromPortId == wayPoint.FromPortId && wp.ToPortId == wayPoint.ToPortId);
+                var matchingWayPoint = _fixture.Routes.FirstOrDefault(wp => wp.StartPortId == wayPoint.FromPortId && wp.DestinationPortId == wayPoint.ToPortId);
                 if (matchingWayPoint != null)
                 {
-                    journeyTimeResponse += matchingWayPoint.DaysTravelTime;
+                    journeyTimeResponse += matchingWayPoint.DaysDuration;
                 }
             }
 

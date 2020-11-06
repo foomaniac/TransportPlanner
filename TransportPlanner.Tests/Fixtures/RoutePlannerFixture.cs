@@ -11,7 +11,7 @@ namespace TransportPlanner.Tests.Fixtures
    public class RoutePlannerFixture
     {
         /// <summary>
-        /// Port Id Enum to Save on referencing numbers
+        /// Port Id Enum to Save on referencing magic numbers
         /// </summary>
         public enum PortsIds
         {
@@ -22,14 +22,31 @@ namespace TransportPlanner.Tests.Fixtures
             BuenosAires
         }
 
-        public List<Port> Ports { get; set; }       
-        public List<WayPoint> WayPoints { get; set; }        
+        /// <summary>
+        /// Route Id Enum to save on referencing magic numbers
+        /// </summary>
+        public enum RouteIds
+        {
+            BuenosAiresToNewYork,
+            BuenosAiresToCasablanca,
+            BuenosAiresToCapeTown,
+            NewYorkToLiverpool,
+            LiverpoolToCasablanca,
+            LiverpoolToCapeTown,
+            CasablancaToLiverpool,
+            CasablancaToCapeTown,
+            CapeTownToNewYork
+        }
+
+        public IList<Port> Ports { get; set; }       
+        public IList<Route> Routes { get; set; }        
+        public IList<Journey> Journeys { get; set; }
 
         public RoutePlannerFixture()
         {
 
             SeedPortsData();
-            SeedWayPoints();
+            SeedRoutes();
         }
 
         private void SeedPortsData()
@@ -44,36 +61,46 @@ namespace TransportPlanner.Tests.Fixtures
             Ports.Add(new Port((int)PortsIds.BuenosAires, "Buenos Aires"));
         }
 
-        private void SeedWayPoints()
+        private void SeedRoutes()
         {
-            WayPoints = new List<WayPoint>();
+            Routes = new List<Route>();
 
             //Buenos Aires to New York
-            WayPoints.Add(new WayPoint(1, (int)PortsIds.BuenosAires, (int)PortsIds.NewYork, 6));
+            Routes.Add(new Route((int)RouteIds.BuenosAiresToNewYork, (int)PortsIds.BuenosAires, (int)PortsIds.NewYork, 6));
 
             //Buenos Aires to Casablanca
-            WayPoints.Add(new WayPoint(2, (int)PortsIds.BuenosAires, (int)PortsIds.Casablanca, 5));
+            Routes.Add(new Route((int)RouteIds.BuenosAiresToCasablanca, (int)PortsIds.BuenosAires, (int)PortsIds.Casablanca, 5));
 
             //Buenos Aires to Cape Town
-            WayPoints.Add(new WayPoint(3, (int)PortsIds.BuenosAires, (int)PortsIds.CapeTown, 4));
+            Routes.Add(new Route((int)RouteIds.BuenosAiresToCapeTown, (int)PortsIds.BuenosAires, (int)PortsIds.CapeTown, 4));
 
             //New York to Liverpool
-            WayPoints.Add(new WayPoint(4, (int)PortsIds.NewYork, (int)PortsIds.Liverpool, 4));
+            Routes.Add(new Route((int)RouteIds.BuenosAiresToCapeTown, (int)PortsIds.NewYork, (int)PortsIds.Liverpool, 4));
 
             //Liverpool to Casablanca
-            WayPoints.Add(new WayPoint(5, (int)PortsIds.Liverpool, (int)PortsIds.Casablanca, 3));
+            Routes.Add(new Route((int)RouteIds.LiverpoolToCasablanca, (int)PortsIds.Liverpool, (int)PortsIds.Casablanca, 3));
 
             //Liverpool to Cape Town
-            WayPoints.Add(new WayPoint(6, (int)PortsIds.Liverpool, (int)PortsIds.CapeTown, 6));
+            Routes.Add(new Route((int)RouteIds.LiverpoolToCapeTown, (int)PortsIds.Liverpool, (int)PortsIds.CapeTown, 6));
 
             //Casablanca to Liverpool
-            WayPoints.Add(new WayPoint(7, (int)PortsIds.Casablanca, (int)PortsIds.Liverpool, 3));
+            Routes.Add(new Route((int)RouteIds.CasablancaToLiverpool, (int)PortsIds.Casablanca, (int)PortsIds.Liverpool, 3));
 
             //Casablanca to Cape Town
-            WayPoints.Add(new WayPoint(7, (int)PortsIds.Casablanca, (int)PortsIds.CapeTown, 6));
+            Routes.Add(new Route((int)RouteIds.CasablancaToCapeTown, (int)PortsIds.Casablanca, (int)PortsIds.CapeTown, 6));
 
             //Cape Town to New York
-            WayPoints.Add(new WayPoint(7, (int)PortsIds.CapeTown, (int)PortsIds.NewYork, 8));
+            Routes.Add(new Route((int)RouteIds.CapeTownToNewYork, (int)PortsIds.CapeTown, (int)PortsIds.NewYork, 8));
+        }
+
+        private void SeedJourneys()
+        {
+            //Buenos Aires > Casablanca > Liverpool
+            Journeys.Add(new Journey());
+
+            //Buenos Aires > Cape Town > > New York > Liverpool
+            Journeys.Add(new Journey());
+
         }
 
     }
