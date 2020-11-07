@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using TransportPlanner.Context;
+using TransportPlanner.Dependencies;
 using TransportPlanner.Models;
 using Xunit;
 
@@ -53,9 +55,11 @@ namespace TransportPlanner.Tests.Fixtures
         public IList<Port> Ports { get; set; }       
         public IList<Route> Routes { get; set; }        
         public IList<Journey> Journeys { get; set; }
+        public ITransportPlannerContext _context;
 
         public RoutePlannerFixture()
         {
+            _context = new TransportPlannerContext();
 
             SeedPortsData();
             SeedRoutes();
