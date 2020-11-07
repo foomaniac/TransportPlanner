@@ -35,7 +35,7 @@ namespace TransportPlanner.Tests.Fixtures
             LiverpoolToCapeTown,
             CasablancaToLiverpool,
             CasablancaToCapeTown,
-            CapeTownToNewYork
+            CapeTownToNewYork,            
         }
 
         public enum NetworkIds
@@ -45,6 +45,9 @@ namespace TransportPlanner.Tests.Fixtures
             BuenosAiresNewYorkLiverpool,
             NewYorkLiverpoolCapeTownNewYork,
             BuenosAiresCasablanca,
+            LiverpoolCapeTownNewyorkLiverpool,
+            LiverpoolCasablancaLiverpool,
+            NewYorkLiverpoolCasablancaLiverpoolCapeTownNewYork
         }
 
         public IList<Port> Ports { get; set; }       
@@ -134,11 +137,26 @@ namespace TransportPlanner.Tests.Fixtures
             Journeys.Add(new Journey((int)NetworkIds.BuenosAiresCasablanca, 0, (int)RouteIds.BuenosAiresToCasablanca));
 
 
-            //Route Network 5 - 
-            //New York > Liverpool > Casablanca > Cape Town > New York
+            //Route Network 5 
+            //Liverpool > Cape Town > NewYork > Liverpool
+            Journeys.Add(new Journey((int)NetworkIds.LiverpoolCapeTownNewyorkLiverpool, 0, (int)RouteIds.LiverpoolToCapeTown));
+            Journeys.Add(new Journey((int)NetworkIds.LiverpoolCapeTownNewyorkLiverpool, 1, (int)RouteIds.CapeTownToNewYork));
+            Journeys.Add(new Journey((int)NetworkIds.LiverpoolCapeTownNewyorkLiverpool, 2, (int)RouteIds.NewYorkToLiverpool));
+
+            //Route Network 5 
+            //Liverpool > Casablanc > Liverpool
+            Journeys.Add(new Journey((int)NetworkIds.LiverpoolCasablancaLiverpool, 0, (int)RouteIds.LiverpoolToCasablanca));
+            Journeys.Add(new Journey((int)NetworkIds.LiverpoolCasablancaLiverpool, 1, (int)RouteIds.CasablancaToLiverpool));
+
 
             //Route Network 6
             //New York > Liverpool > Casablanca > Liverpool > Cape Town > New York
+            Journeys.Add(new Journey((int)NetworkIds.NewYorkLiverpoolCasablancaLiverpoolCapeTownNewYork, 0, (int)RouteIds.NewYorkToLiverpool));
+            Journeys.Add(new Journey((int)NetworkIds.NewYorkLiverpoolCasablancaLiverpoolCapeTownNewYork, 1, (int)RouteIds.LiverpoolToCasablanca));
+            Journeys.Add(new Journey((int)NetworkIds.NewYorkLiverpoolCasablancaLiverpoolCapeTownNewYork, 2, (int)RouteIds.CasablancaToLiverpool));
+            Journeys.Add(new Journey((int)NetworkIds.NewYorkLiverpoolCasablancaLiverpoolCapeTownNewYork, 3, (int)RouteIds.LiverpoolToCapeTown));
+            Journeys.Add(new Journey((int)NetworkIds.NewYorkLiverpoolCasablancaLiverpoolCapeTownNewYork, 4, (int)RouteIds.CapeTownToNewYork));
+
         }
 
     }
