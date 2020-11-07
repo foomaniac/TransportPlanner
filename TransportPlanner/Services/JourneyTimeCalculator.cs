@@ -25,7 +25,7 @@ namespace TransportPlanner.Services
             {
                 var matchingRoute = _context.Routes.FirstOrDefault(wp => wp.StartPortId == wayPoint.StartPortId && wp.DestinationPortId == wayPoint.DestinationPortId);
                                 
-                if (matchingRoute != null)
+                if (matchingRoute == null)
                 {
                     response.IsValidRoute = false;
                     break;
@@ -39,11 +39,26 @@ namespace TransportPlanner.Services
 
         public class Request
         {
-            public IList<Route> Routes { get; set; }
+            public IList<RequestRoute> Routes { get; set; }
             public Request()
             {
-                Routes = new List<Route>();
+                Routes = new List<RequestRoute>();
             }
+        }
+
+        public class RequestRoute
+        {
+
+            public RequestRoute(int startPortId, int destinationPortId)
+            {
+                StartPortId = startPortId;
+                DestinationPortId = destinationPortId;
+            }
+
+            public int Step { get; set; }
+            public int StartPortId { get; set; }
+
+            public int DestinationPortId { get; set; }
         }
 
         public class Response

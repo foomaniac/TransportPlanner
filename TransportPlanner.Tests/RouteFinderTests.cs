@@ -33,22 +33,22 @@ namespace TransportPlanner.Tests
             var destinationPortId = (int)RoutePlannerFixture.PortsIds.Liverpool;
 
             //Let's get all journeys that start with our home port 
-            var routesMatchingStart = from journey in _fixture.Journeys
-                                      join route in _fixture.Routes on journey.RouteId equals route.Id
+            var routesMatchingStart = from journey in _fixture._context.Journeys
+                                      join route in _fixture._context.Routes on journey.RouteId equals route.Id
                                       where route.StartPortId == homePortId && journey.Order == 0
                                       select new { journey.NetworkId };
 
             //Get all routes that have a stop off at our destination
-            var routesMatchingEnd = from journey in _fixture.Journeys
-                                    join route in _fixture.Routes on journey.RouteId equals route.Id
+            var routesMatchingEnd = from journey in _fixture._context.Journeys
+                                    join route in _fixture._context.Routes on journey.RouteId equals route.Id
                                     where route.DestinationPortId == destinationPortId
                                     select new { journey.NetworkId };
 
             //FInd all matching journeys with number of steps
-            var availableJourneysWith3Stops = (from journey in _fixture.Journeys
+            var availableJourneysWith3Stops = (from journey in _fixture._context.Journeys
                                                join matchingStartRoutes in routesMatchingStart on journey.NetworkId equals matchingStartRoutes.NetworkId
                                                join matchingEndRoutes in routesMatchingEnd on journey.NetworkId equals matchingEndRoutes.NetworkId
-                                               join route in _fixture.Routes on journey.RouteId equals route.Id
+                                               join route in _fixture._context.Routes on journey.RouteId equals route.Id
                                                group journey by journey.NetworkId into journeyRoutes
                                                select new { journeyRoutes.Key, stopsInRoute = journeyRoutes.Select(route => route.RouteId).Distinct().Count() }).ToList();
             
@@ -72,22 +72,22 @@ namespace TransportPlanner.Tests
 
 
             //Let's get all journeys that start with our home port 
-            var routesMatchingStart = from journey in _fixture.Journeys
-                                      join route in _fixture.Routes on journey.RouteId equals route.Id
+            var routesMatchingStart = from journey in _fixture._context.Journeys
+                                      join route in _fixture._context.Routes on journey.RouteId equals route.Id
                                       where route.StartPortId == homePortId && journey.Order == 0
                                       select new { journey.NetworkId };
 
             //Get all routes that have a stop off at our destination
-            var routesMatchingEnd = from journey in _fixture.Journeys
-                                    join route in _fixture.Routes on journey.RouteId equals route.Id
+            var routesMatchingEnd = from journey in _fixture._context.Journeys
+                                    join route in _fixture._context.Routes on journey.RouteId equals route.Id
                                     where route.DestinationPortId == destinationPortId
                                     select new { journey.NetworkId };
 
             //FInd all matching journeys with number of steps
-            var availableJourneysWith3Stops = (from journey in _fixture.Journeys
+            var availableJourneysWith3Stops = (from journey in _fixture._context.Journeys
                                                join matchingStartRoutes in routesMatchingStart on journey.NetworkId equals matchingStartRoutes.NetworkId
                                                join matchingEndRoutes in routesMatchingEnd on journey.NetworkId equals matchingEndRoutes.NetworkId
-                                               join route in _fixture.Routes on journey.RouteId equals route.Id
+                                               join route in _fixture._context.Routes on journey.RouteId equals route.Id
                                                group journey by journey.NetworkId into journeyRoutes
                                                select new { journeyRoutes.Key, stopsInRoute = journeyRoutes.Select(route => route.RouteId).Distinct().Count() }).ToList();
 
@@ -111,23 +111,23 @@ namespace TransportPlanner.Tests
 
 
             //Let's get all journeys that start with our home port 
-            var routesMatchingStart = from journey in _fixture.Journeys
-                                      join route in _fixture.Routes on journey.RouteId equals route.Id
+            var routesMatchingStart = from journey in _fixture._context.Journeys
+                                      join route in _fixture._context.Routes on journey.RouteId equals route.Id
                                       where route.StartPortId == homePortId && journey.Order == 0
                                       select new { journey.NetworkId };
 
             //Get all routes that have a stop off at our destination
-            var routesMatchingEnd = from journey in _fixture.Journeys
-                                    join route in _fixture.Routes on journey.RouteId equals route.Id
+            var routesMatchingEnd = from journey in _fixture._context.Journeys
+                                    join route in _fixture._context.Routes on journey.RouteId equals route.Id
                                     where route.DestinationPortId == destinationPortId
                                     select new { journey.NetworkId };
 
             //Filter the available journeys based on ones matching both lists
             //selecting the journey network Id and Duration
-            var availableJourneysWithRoutes = (from journey in _fixture.Journeys
+            var availableJourneysWithRoutes = (from journey in _fixture._context.Journeys
                                                join matchingStartRoutes in routesMatchingStart on journey.NetworkId equals matchingStartRoutes.NetworkId
                                                join matchingEndRoutes in routesMatchingEnd on journey.NetworkId equals matchingEndRoutes.NetworkId
-                                               join route in _fixture.Routes on journey.RouteId equals route.Id
+                                               join route in _fixture._context.Routes on journey.RouteId equals route.Id
                                                orderby journey.NetworkId, journey.Order
                                                select new { journey.NetworkId, route.DaysDuration }).ToList();
 

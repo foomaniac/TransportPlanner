@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using TransportPlanner.Models;
+using TransportPlanner.Services;
 using TransportPlanner.Tests.Fixtures;
 using Xunit;
 
@@ -17,10 +19,11 @@ namespace TransportPlanner.Tests
     public class CalculateJourneyTimeTests : IClassFixture<RoutePlannerFixture>
     {
         RoutePlannerFixture _fixture;
-
+        JourneyTimeCalculator _journeyTimeCalculator;
         public CalculateJourneyTimeTests(RoutePlannerFixture fixture)
         {
             _fixture = fixture;
+            _journeyTimeCalculator = new JourneyTimeCalculator(_fixture._context);
         }
 
         /// <summary>
@@ -29,21 +32,17 @@ namespace TransportPlanner.Tests
         [Fact]
         public void Calling_Calculate_Journey_Time_For_Route_4_Returns_Invalid_Route_Response()
         {
-            //Arrange
-            bool isValidRoute = true;
-            var journeyTimeRequest = new JourneyTimeRequest();
-            journeyTimeRequest.RouteWayPoints.Add(new RouteWayPoint(0, (int)RoutePlannerFixture.PortsIds.BuenosAires, (int)RoutePlannerFixture.PortsIds.CapeTown));
-            journeyTimeRequest.RouteWayPoints.Add(new RouteWayPoint(1, (int)RoutePlannerFixture.PortsIds.CapeTown, (int)RoutePlannerFixture.PortsIds.Casablanca));
+            //Arrange            
+            var journeyTimeRequest = new JourneyTimeCalculator.Request();
+            journeyTimeRequest.Routes.Add(new JourneyTimeCalculator.RequestRoute((int)RoutePlannerFixture.PortsIds.BuenosAires, (int)RoutePlannerFixture.PortsIds.CapeTown));
+            journeyTimeRequest.Routes.Add(new JourneyTimeCalculator.RequestRoute((int)RoutePlannerFixture.PortsIds.CapeTown, (int)RoutePlannerFixture.PortsIds.Casablanca));
+
 
             //Act
-            foreach (var wayPoint in journeyTimeRequest.RouteWayPoints)
-            {
-                isValidRoute = _fixture.Routes.Any(wp => wp.StartPortId == wayPoint.FromPortId && wp.DestinationPortId == wayPoint.ToPortId);
-                if (!isValidRoute) break;
-            }
-
+            var response = _journeyTimeCalculator.CalculateJourneyTime(journeyTimeRequest);
+                      
             //Assert
-            Assert.False(isValidRoute);
+            Assert.False(response.IsValidRoute);
         }
 
         /// <summary>
@@ -54,24 +53,16 @@ namespace TransportPlanner.Tests
         {
             //Arrange
             var expectedJourneyTime = 10;
-            var journeyTimeResponse = 0;
 
-            var journeyTimeRequest = new JourneyTimeRequest();
-            journeyTimeRequest.RouteWayPoints.Add(new RouteWayPoint(0, (int)RoutePlannerFixture.PortsIds.BuenosAires, (int)RoutePlannerFixture.PortsIds.NewYork));
-            journeyTimeRequest.RouteWayPoints.Add(new RouteWayPoint(1, (int)RoutePlannerFixture.PortsIds.NewYork, (int)RoutePlannerFixture.PortsIds.Liverpool));
+            var journeyTimeRequest = new JourneyTimeCalculator.Request();
+            journeyTimeRequest.Routes.Add(new JourneyTimeCalculator.RequestRoute((int)RoutePlannerFixture.PortsIds.BuenosAires, (int)RoutePlannerFixture.PortsIds.NewYork));
+            journeyTimeRequest.Routes.Add(new JourneyTimeCalculator.RequestRoute((int)RoutePlannerFixture.PortsIds.NewYork, (int)RoutePlannerFixture.PortsIds.Liverpool));
             
             //Act
-            foreach (var wayPoint in journeyTimeRequest.RouteWayPoints)
-            {
-                var matchingWayPoint = _fixture.Routes.FirstOrDefault(wp => wp.StartPortId == wayPoint.FromPortId && wp.DestinationPortId == wayPoint.ToPortId);
-                if(matchingWayPoint != null)
-                {
-                    journeyTimeResponse += matchingWayPoint.DaysDuration;
-                }                
-            }
+            var response = _journeyTimeCalculator.CalculateJourneyTime(journeyTimeRequest);
 
             //Assert
-            Assert.Equal(expectedJourneyTime, journeyTimeResponse);
+            Assert.Equal(expectedJourneyTime, response.JourneyTime);
         }
 
         /// <summary>
@@ -82,25 +73,18 @@ namespace TransportPlanner.Tests
         {
             //Arrange
             var expectedJourneyTime = 8;
-            var journeyTimeResponse = 0;
 
             //Act
-            var journeyTimeRequest = new JourneyTimeRequest();
-            journeyTimeRequest.RouteWayPoints.Add(new RouteWayPoint(0, (int)RoutePlannerFixture.PortsIds.BuenosAires, (int)RoutePlannerFixture.PortsIds.Casablanca));
-            journeyTimeRequest.RouteWayPoints.Add(new RouteWayPoint(1, (int)RoutePlannerFixture.PortsIds.Casablanca, (int)RoutePlannerFixture.PortsIds.Liverpool));
+            var journeyTimeRequest = new JourneyTimeCalculator.Request();
+            journeyTimeRequest.Routes.Add(new JourneyTimeCalculator.RequestRoute( (int)RoutePlannerFixture.PortsIds.BuenosAires, (int)RoutePlannerFixture.PortsIds.Casablanca));
+            journeyTimeRequest.Routes.Add(new JourneyTimeCalculator.RequestRoute( (int)RoutePlannerFixture.PortsIds.Casablanca, (int)RoutePlannerFixture.PortsIds.Liverpool));
 
             //Act
-            foreach (var wayPoint in journeyTimeRequest.RouteWayPoints)
-            {
-                var matchingWayPoint = _fixture.Routes.FirstOrDefault(wp => wp.StartPortId == wayPoint.FromPortId && wp.DestinationPortId == wayPoint.ToPortId);
-                if (matchingWayPoint != null)
-                {
-                    journeyTimeResponse += matchingWayPoint.DaysDuration;
-                }
-            }
+            var response = _journeyTimeCalculator.CalculateJourneyTime(journeyTimeRequest);
+
 
             //Assert
-            Assert.Equal(expectedJourneyTime, journeyTimeResponse);
+            Assert.Equal(expectedJourneyTime, response.JourneyTime);
 
         }
 
@@ -111,58 +95,24 @@ namespace TransportPlanner.Tests
         public void Calling_Calculate_Journey_Time_For_Route_3_Returns_19_Days()
         {
             //Arrange
-            var expectedJourneyTime = 19;
-            var journeyTimeResponse = 0;
+            var expectedJourneyTime = 19;            
 
             //Act
-            var journeyTimeRequest = new JourneyTimeRequest();
-            journeyTimeRequest.RouteWayPoints.Add(new RouteWayPoint(0, (int)RoutePlannerFixture.PortsIds.BuenosAires, (int)RoutePlannerFixture.PortsIds.CapeTown));
-            journeyTimeRequest.RouteWayPoints.Add(new RouteWayPoint(1, (int)RoutePlannerFixture.PortsIds.CapeTown, (int)RoutePlannerFixture.PortsIds.NewYork));
-            journeyTimeRequest.RouteWayPoints.Add(new RouteWayPoint(2, (int)RoutePlannerFixture.PortsIds.NewYork, (int)RoutePlannerFixture.PortsIds.Liverpool));
-            journeyTimeRequest.RouteWayPoints.Add(new RouteWayPoint(3, (int)RoutePlannerFixture.PortsIds.Liverpool, (int)RoutePlannerFixture.PortsIds.Casablanca));
+            var journeyTimeRequest = new JourneyTimeCalculator.Request();
+            journeyTimeRequest.Routes.Add(new JourneyTimeCalculator.RequestRoute((int)RoutePlannerFixture.PortsIds.BuenosAires, (int)RoutePlannerFixture.PortsIds.CapeTown));
+            journeyTimeRequest.Routes.Add(new JourneyTimeCalculator.RequestRoute((int)RoutePlannerFixture.PortsIds.CapeTown, (int)RoutePlannerFixture.PortsIds.NewYork));
+            journeyTimeRequest.Routes.Add(new JourneyTimeCalculator.RequestRoute((int)RoutePlannerFixture.PortsIds.NewYork, (int)RoutePlannerFixture.PortsIds.Liverpool));
+            journeyTimeRequest.Routes.Add(new JourneyTimeCalculator.RequestRoute((int)RoutePlannerFixture.PortsIds.Liverpool, (int)RoutePlannerFixture.PortsIds.Casablanca));
 
             //Act
-            foreach (var wayPoint in journeyTimeRequest.RouteWayPoints)
-            {
-                var matchingWayPoint = _fixture.Routes.FirstOrDefault(wp => wp.StartPortId == wayPoint.FromPortId && wp.DestinationPortId == wayPoint.ToPortId);
-                if (matchingWayPoint != null)
-                {
-                    journeyTimeResponse += matchingWayPoint.DaysDuration;
-                }
-            }
+            var response = _journeyTimeCalculator.CalculateJourneyTime(journeyTimeRequest);
+
 
             //Assert
-            Assert.Equal(expectedJourneyTime, journeyTimeResponse);
+            Assert.Equal(expectedJourneyTime, response.JourneyTime);
 
         }
 
-        /// <summary>
-        /// WIP Code
-        /// </summary>
-        public class JourneyTimeRequest
-        {
-            public IList<RouteWayPoint> RouteWayPoints { get; set; }
-            public JourneyTimeRequest()
-            {
-                RouteWayPoints = new List<RouteWayPoint>();
-            }
-        }
-
-        public class RouteWayPoint
-        {
-
-            public RouteWayPoint(int step, int fromPortId, int toPortId)
-            {
-                Step = step;
-                FromPortId = fromPortId;
-                ToPortId = toPortId;
-            }
-
-            public int Step { get; set; }
-            public int FromPortId { get; set; }
-
-            public int ToPortId { get; set; }
-        }
 
     }
 }
