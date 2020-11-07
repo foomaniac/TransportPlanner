@@ -4,9 +4,8 @@ namespace TransportPlanner.Models
 {
     public class Port
     {
-        int Id { get; set; }
-        string Name { get; set; }
-
+        public int Id { get; private set; }
+        public string Name { get; set; }
 
         public Port(int id, string name)
         {
