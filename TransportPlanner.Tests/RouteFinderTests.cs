@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using TransportPlanner.Dependencies;
+using TransportPlanner.Services;
 using TransportPlanner.Tests.Fixtures;
 using Xunit;
 
@@ -14,9 +16,11 @@ namespace TransportPlanner.Tests
     public partial class RouteFinderTests : IClassFixture<RoutePlannerFixture>
     {
         RoutePlannerFixture _fixture;
+        JourneyFinder _journeyFinder;
         public RouteFinderTests(RoutePlannerFixture fixture)
         {
             _fixture = fixture;
+            _journeyFinder = new JourneyFinder(_fixture._context, _fixture._journeyQuery);
         }
 
         /// <summary>
@@ -32,27 +36,9 @@ namespace TransportPlanner.Tests
             var homePortId = (int)RoutePlannerFixture.PortsIds.Liverpool;
             var destinationPortId = (int)RoutePlannerFixture.PortsIds.Liverpool;
 
-            //Let's get all journeys that start with our home port 
-            var routesMatchingStart = from journey in _fixture._context.JourneyRoutes
-                                      join route in _fixture._context.Routes on journey.RouteId equals route.Id
-                                      where route.StartPortId == homePortId && journey.Order == 0
-                                      select new { journey.JourneyId };
+            var routesFoundByService = _journeyFinder.FindJourneys(new JourneyFinder.Request() { StartPortId = homePortId, DestinationPortId = destinationPortId });
 
-            //Get all routes that have a stop off at our destination
-            var routesMatchingEnd = from journey in _fixture._context.JourneyRoutes
-                                    join route in _fixture._context.Routes on journey.RouteId equals route.Id
-                                    where route.DestinationPortId == destinationPortId
-                                    select new { journey.JourneyId };
-
-            //FInd all matching journeys with number of steps
-            var availableJourneysWith3Stops = (from journey in _fixture._context.JourneyRoutes
-                                               join matchingStartRoutes in routesMatchingStart on journey.JourneyId equals matchingStartRoutes.JourneyId
-                                               join matchingEndRoutes in routesMatchingEnd on journey.JourneyId equals matchingEndRoutes.JourneyId
-                                               join route in _fixture._context.Routes on journey.RouteId equals route.Id
-                                               group journey by journey.JourneyId into journeyRoutes
-                                               select new { journeyRoutes.Key, stopsInRoute = journeyRoutes.Select(route => route.RouteId).Distinct().Count() }).ToList();
-            
-            calculatedNumberOfRoutesWith3Steps = availableJourneysWith3Stops.Where(journey => journey.stopsInRoute <= maxiumNumberOfRoutes).Count();
+            calculatedNumberOfRoutesWith3Steps = routesFoundByService.Journeys.Where(journey => journey.Routes.Count() <= maxiumNumberOfRoutes).Count();                
 
             Assert.Equal(expectedNumberOfRoutesWith3Steps, calculatedNumberOfRoutesWith3Steps);
         }
@@ -70,28 +56,9 @@ namespace TransportPlanner.Tests
             var homePortId = (int)RoutePlannerFixture.PortsIds.BuenosAires;
             var destinationPortId = (int)RoutePlannerFixture.PortsIds.Liverpool;
 
+            var routesFoundByService = _journeyFinder.FindJourneys(new JourneyFinder.Request() { StartPortId = homePortId, DestinationPortId = destinationPortId });
 
-            //Let's get all journeys that start with our home port 
-            var routesMatchingStart = from journey in _fixture._context.JourneyRoutes
-                                      join route in _fixture._context.Routes on journey.RouteId equals route.Id
-                                      where route.StartPortId == homePortId && journey.Order == 0
-                                      select new { journey.JourneyId };
-
-            //Get all routes that have a stop off at our destination
-            var routesMatchingEnd = from journey in _fixture._context.JourneyRoutes
-                                    join route in _fixture._context.Routes on journey.RouteId equals route.Id
-                                    where route.DestinationPortId == destinationPortId
-                                    select new { journey.JourneyId };
-
-            //FInd all matching journeys with number of steps
-            var availableJourneysWith3Stops = (from journey in _fixture._context.JourneyRoutes
-                                               join matchingStartRoutes in routesMatchingStart on journey.JourneyId equals matchingStartRoutes.JourneyId
-                                               join matchingEndRoutes in routesMatchingEnd on journey.JourneyId equals matchingEndRoutes.JourneyId
-                                               join route in _fixture._context.Routes on journey.RouteId equals route.Id
-                                               group journey by journey.JourneyId into journeyRoutes
-                                               select new { journeyRoutes.Key, stopsInRoute = journeyRoutes.Select(route => route.RouteId).Distinct().Count() }).ToList();
-
-            calculatedNumberOfRoutesWith4Steps = availableJourneysWith3Stops.Where(journey => journey.stopsInRoute == requiredNumberOfStops).Count();
+            calculatedNumberOfRoutesWith4Steps = routesFoundByService.Journeys.Where(journey => journey.Routes.Count() == requiredNumberOfStops).Count();
 
             Assert.Equal(expectedNumberOfRoutesWith4Steps, calculatedNumberOfRoutesWith4Steps);
         }
@@ -108,37 +75,11 @@ namespace TransportPlanner.Tests
 
             var homePortId = (int)RoutePlannerFixture.PortsIds.Liverpool;
             var destinationPortId = (int)RoutePlannerFixture.PortsIds.Liverpool;
+   
+            var routesFoundByService = _journeyFinder.FindJourneys(new JourneyFinder.Request() { StartPortId = homePortId, DestinationPortId = destinationPortId });
 
-
-            //Let's get all journeys that start with our home port 
-            var routesMatchingStart = from journey in _fixture._context.JourneyRoutes
-                                      join route in _fixture._context.Routes on journey.RouteId equals route.Id
-                                      where route.StartPortId == homePortId && journey.Order == 0
-                                      select new { journey.JourneyId };
-
-            //Get all routes that have a stop off at our destination
-            var routesMatchingEnd = from journey in _fixture._context.JourneyRoutes
-                                    join route in _fixture._context.Routes on journey.RouteId equals route.Id
-                                    where route.DestinationPortId == destinationPortId
-                                    select new { journey.JourneyId };
-
-            //Filter the available journeys based on ones matching both lists
-            //selecting the journey network Id and Duration
-            var availableJourneysWithRoutes = (from journey in _fixture._context.JourneyRoutes
-                                               join matchingStartRoutes in routesMatchingStart on journey.JourneyId equals matchingStartRoutes.JourneyId
-                                               join matchingEndRoutes in routesMatchingEnd on journey.JourneyId equals matchingEndRoutes.JourneyId
-                                               join route in _fixture._context.Routes on journey.RouteId equals route.Id
-                                               orderby journey.JourneyId, journey.Order
-                                               select new { journey.JourneyId, route.DaysDuration }).ToList();
-
-            //Get total journey times for routes
-            var journeyTimes = from matchingRoutes in availableJourneysWithRoutes
-                                      group matchingRoutes by matchingRoutes.JourneyId into routeJourneyTimes
-                                      orderby routeJourneyTimes.Sum(rjt => rjt.DaysDuration)
-                                      select new { routeJourneyTimes.Key, JourneyTime = routeJourneyTimes.Sum(rjt => rjt.DaysDuration)}                                     ;
-
-            calculatedNumberOfRoutesLessThan25Days = journeyTimes.Where(jt => jt.JourneyTime <= maximumJourneyTime).Select(jt => jt.Key).Distinct().Count();
-            
+            calculatedNumberOfRoutesLessThan25Days = routesFoundByService.Journeys.Where(journey => journey.TotalJourneyTime() <= maximumJourneyTime).Count();
+                  
             Assert.Equal(expectedNumberOfRoutesWith3Steps, calculatedNumberOfRoutesLessThan25Days);
         }
 

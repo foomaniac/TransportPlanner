@@ -6,6 +6,7 @@ using System.Text;
 using TransportPlanner.Context;
 using TransportPlanner.Dependencies;
 using TransportPlanner.Models;
+using TransportPlanner.Queries;
 using Xunit;
 
 namespace TransportPlanner.Tests.Fixtures
@@ -52,14 +53,13 @@ namespace TransportPlanner.Tests.Fixtures
             NewYorkLiverpoolCasablancaLiverpoolCapeTownNewYork
         }
 
-        public IList<Port> Ports { get; set; }
-        public IList<Route> Routes { get; set; }
-        public IList<JourneyRoute> Journeys { get; set; }
         public ITransportPlannerContext _context;
+        public IJourneyQuery _journeyQuery;        
 
         public RoutePlannerFixture()
         {
             _context = new TransportPlannerContext();
+            _journeyQuery = new JourneyQuery(_context);
 
             SeedPortsData();
             SeedRoutes();

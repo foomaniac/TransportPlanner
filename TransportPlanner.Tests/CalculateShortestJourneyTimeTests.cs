@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using TransportPlanner.Services;
 using TransportPlanner.Tests.Fixtures;
 using Xunit;
 using Xunit.Sdk;
@@ -16,9 +17,12 @@ namespace TransportPlanner.Tests
     public partial class CalculateShortestJourneyTimeTests : IClassFixture<RoutePlannerFixture>
     {
         RoutePlannerFixture _fixture;
+        JourneyFinder _journeyFinder;
         public CalculateShortestJourneyTimeTests(RoutePlannerFixture fixture)
         {
             _fixture = fixture;
+            _journeyFinder = new JourneyFinder(_fixture._context, _fixture._journeyQuery);
+
         }
 
         /// <summary>
@@ -27,6 +31,7 @@ namespace TransportPlanner.Tests
         [Fact]
         public void Calling_Calculate_Shortest_Journey_Time_For_Route_1_Returns_8_days()
         {
+            //Arrange
             var expectedJourneyTime = 8;
             var journeyTimeReturned = 0;
 
@@ -34,34 +39,21 @@ namespace TransportPlanner.Tests
             var destinationPortId = (int)RoutePlannerFixture.PortsIds.Liverpool;
 
 
-            //Let's get all journeys that start with our home port 
-            var routesMatchingStart = from journey in _fixture._context.JourneyRoutes
-                                      join route in _fixture._context.Routes on journey.RouteId equals route.Id
-                                      where route.StartPortId == homePortId && journey.Order == 0
-                                      select new { journey.JourneyId };
+            //Act
+            var routesFoundByService = _journeyFinder.FindJourneys(
+             new JourneyFinder.Request()
+             {
+                 StartPortId = homePortId,
+                 DestinationPortId = destinationPortId,
+                 FilterCriteria = new JourneyFinder.FilterCriteria(true, null)
+             });
 
-            //Get all routes that have a stop off at our destination
-            var routesMatchingEnd = from journey in _fixture._context.JourneyRoutes
-                                    join route in _fixture._context.Routes on journey.RouteId equals route.Id
-                                    where route.DestinationPortId == destinationPortId
-                                    select new { journey.JourneyId };
+            //Assert
+            Assert.NotNull(routesFoundByService);
+            //Assert that only fastest route is returned
+            Assert.Single(routesFoundByService.Journeys);
 
-
-            var availableJourneysWithDuration = (from journey in _fixture._context.JourneyRoutes
-                                                 join matchingStartRoutes in routesMatchingStart on journey.JourneyId equals matchingStartRoutes.JourneyId
-                                                 join matchingEndRoutes in routesMatchingEnd on journey.JourneyId equals matchingEndRoutes.JourneyId
-                                                 join route in _fixture._context.Routes on journey.RouteId equals route.Id
-                                                 orderby journey.JourneyId, journey.Order
-                                                 select new { journey.JourneyId, route.DaysDuration }).ToList();
-
-
-            var quickestJourneyTime = from matchingRoutes in availableJourneysWithDuration
-                                      group matchingRoutes by matchingRoutes.JourneyId into routeJourneyTimes
-                                      orderby routeJourneyTimes.Sum(rjt => rjt.DaysDuration)
-                                      select new { JourneyTime = routeJourneyTimes.Sum(rjt => rjt.DaysDuration) };
-
-
-            journeyTimeReturned = quickestJourneyTime.First().JourneyTime;
+            journeyTimeReturned = routesFoundByService.Journeys.FirstOrDefault().TotalJourneyTime();
 
             Assert.Equal(expectedJourneyTime, journeyTimeReturned);
         }
@@ -79,35 +71,21 @@ namespace TransportPlanner.Tests
             var destinationPortId = (int)RoutePlannerFixture.PortsIds.NewYork;
 
 
-            //Let's get all journeys that start with our home port 
-            var routesMatchingStart = from journey in _fixture._context.JourneyRoutes
-                                      join route in _fixture._context.Routes on journey.RouteId equals route.Id
-                                      where route.StartPortId == homePortId && journey.Order == 0
-                                      select new { journey.JourneyId };
+            //Act
+            var routesFoundByService = _journeyFinder.FindJourneys(
+             new JourneyFinder.Request()
+             {
+                 StartPortId = homePortId,
+                 DestinationPortId = destinationPortId,
+                 FilterCriteria = new JourneyFinder.FilterCriteria(true, null)
+             });
 
-            //Get all routes that have a stop off at our destination
-            var routesMatchingEnd = from journey in _fixture._context.JourneyRoutes
-                                    join route in _fixture._context.Routes on journey.RouteId equals route.Id
-                                    where route.DestinationPortId == destinationPortId
-                                    select new { journey.JourneyId };
+            //Assert
+            Assert.NotNull(routesFoundByService);
+            //Assert that only fastest route is returned
+            Assert.Single(routesFoundByService.Journeys);
 
-            //Filter the available journeys based on ones matching both lists
-            //selecting the journey network Id and Duration
-            var availableJourneysWithRoutes = (from journey in _fixture._context.JourneyRoutes
-                                               join matchingStartRoutes in routesMatchingStart on journey.JourneyId equals matchingStartRoutes.JourneyId
-                                               join matchingEndRoutes in routesMatchingEnd on journey.JourneyId equals matchingEndRoutes.JourneyId
-                                               join route in _fixture._context.Routes on journey.RouteId equals route.Id
-                                               orderby journey.JourneyId, journey.Order
-                                               select new { journey.JourneyId, route.DaysDuration }).ToList();
-
-
-            var quickestJourneyTime = from matchingRoutes in availableJourneysWithRoutes
-                                      group matchingRoutes by matchingRoutes.JourneyId into routeJourneyTimes
-                                      orderby routeJourneyTimes.Sum(rjt => rjt.DaysDuration)
-                                      select new { JourneyTime = routeJourneyTimes.Sum(rjt => rjt.DaysDuration) };
-
-
-            journeyTimeReturned = quickestJourneyTime.First().JourneyTime;
+            journeyTimeReturned = routesFoundByService.Journeys.FirstOrDefault().TotalJourneyTime();            
 
             Assert.Equal(expectedJourneyTime, journeyTimeReturned);
         }

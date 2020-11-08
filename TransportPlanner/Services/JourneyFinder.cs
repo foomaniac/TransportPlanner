@@ -11,7 +11,7 @@ namespace TransportPlanner.Services
     /// <summary>
     /// Service will search and return available predefined journeys that match a required start and destination port
     /// </summary>
-   public class JourneyFinder
+    public class JourneyFinder
     {
         private ITransportPlannerContext _context;
         private IJourneyQuery _journeyQuery;
@@ -25,6 +25,8 @@ namespace TransportPlanner.Services
         public Response FindJourneys(Request request)
         {
             var response = new Response();
+
+            //TODO: Clean up linq usage and streamline
 
             //Let's get all journeys that start with our home port 
             var routesMatchingStart = from journey in _context.JourneyRoutes
@@ -40,24 +42,57 @@ namespace TransportPlanner.Services
 
             //Filter the available journeys based on ones matching both lists
             var availableJourneyIds = (from journey in _context.JourneyRoutes
-                                               join matchingStartRoutes in routesMatchingStart on journey.JourneyId equals matchingStartRoutes.JourneyId
-                                               join matchingEndRoutes in routesMatchingEnd on journey.JourneyId equals matchingEndRoutes.JourneyId
-                                               select journey.JourneyId);
+                                       join matchingStartRoutes in routesMatchingStart on journey.JourneyId equals matchingStartRoutes.JourneyId
+                                       join matchingEndRoutes in routesMatchingEnd on journey.JourneyId equals matchingEndRoutes.JourneyId
+                                       select journey.JourneyId).Distinct();
 
-            if(!availableJourneyIds.Any())
+            if (!availableJourneyIds.Any())
             {
                 response.FoundMatchingJourneys = false;
                 return response;
             }
 
-            foreach(var journeyId in availableJourneyIds)
+            foreach (var journeyId in availableJourneyIds)
             {
                 response.FoundMatchingJourneys = true;
                 var journey = _journeyQuery.GetJourney(journeyId);
                 response.Journeys.Add(journey);
             }
 
+            ApplyFilterCriteria(request.FilterCriteria, response);
+
             return response;
+        }
+
+        private void ApplyFilterCriteria(FilterCriteria filterCriteria, Response response)
+        {
+            if (filterCriteria.ReturnQuickestRoute)
+            {
+                var quickestJourney = response.Journeys.OrderBy(jr => jr.TotalJourneyTime()).First();
+                response.Journeys.Clear();
+                response.Journeys.Add(quickestJourney);
+            }
+
+            if (filterCriteria.ApplyMaximumJourneyTime.HasValue)
+            {
+                var quickestJourney = response.Journeys.OrderBy(jr => jr.TotalJourneyTime() <= filterCriteria.ApplyMaximumJourneyTime).First();
+                response.Journeys.Clear();
+                response.Journeys.Add(quickestJourney);
+            }
+
+            if (filterCriteria.ApplyMaximumNumberOfStops.HasValue)
+            {
+                var quickestJourney = response.Journeys.OrderBy(jr => jr.Routes.Count() <= filterCriteria.ApplyMaximumNumberOfStops).First();
+                response.Journeys.Clear();
+                response.Journeys.Add(quickestJourney);
+            }
+
+            if (filterCriteria.ApplyNumberOfStops.HasValue)
+            {
+                var quickestJourney = response.Journeys.OrderBy(jr => jr.Routes.Count() == filterCriteria.ApplyNumberOfStops).First();
+                response.Journeys.Clear();
+                response.Journeys.Add(quickestJourney);
+            }
         }
 
         public class Request
@@ -66,12 +101,39 @@ namespace TransportPlanner.Services
 
             public int DestinationPortId { get; set; }
 
+            public FilterCriteria FilterCriteria { get; set; }
+
+            public Request()
+            {
+                FilterCriteria = new FilterCriteria(false, null, null, null);
+            }
+        }
+
+        public class FilterCriteria
+        {
+            public bool ReturnQuickestRoute { get; set; }
+            public int? ApplyMaximumJourneyTime { get; set; }
+            public int? ApplyMaximumNumberOfStops { get; set; }
+            public int? ApplyNumberOfStops { get; set; }
+
+            public FilterCriteria(bool returnQuickestRoute, int? applyMaximumJourneyTime, int? applyMaximumNumberOfStops, int? applyNumberOfStops)
+            {
+                ReturnQuickestRoute = returnQuickestRoute;
+                ApplyMaximumJourneyTime = applyMaximumJourneyTime;
+                ApplyMaximumNumberOfStops = applyMaximumNumberOfStops;
+                ApplyNumberOfStops = applyNumberOfStops;
+            }
         }
 
         public class Response
         {
             public bool FoundMatchingJourneys { get; set; }
             public List<Journey> Journeys { get; set; }
+
+            public Response()
+            {
+                Journeys = new List<Journey>();
+            }
         }
     }
 }

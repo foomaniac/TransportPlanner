@@ -38,7 +38,7 @@ namespace TransportPlanner.Queries
 
             var availableRoutesInJourney = _context.JourneyRoutes.Where(route => route.JourneyId == journeyId);
 
-            foreach(var journeyRoute in routesInJourney)
+            foreach(var journeyRoute in availableRoutesInJourney)
             {
                 var newJourneyRoute = new JourneyRoute(journeyId, journeyRoute.Order, journeyRoute.RouteId);
                 newJourneyRoute.Route = _context.Routes.FirstOrDefault(rt => rt.Id == journeyRoute.RouteId);
