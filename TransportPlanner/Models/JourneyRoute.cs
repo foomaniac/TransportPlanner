@@ -14,9 +14,9 @@ namespace TransportPlanner.Models
         /// <summary>
         /// Network Groups Journeys 
         /// </summary>        
-        public int JourneyId;
-        public int Order { get; private set; }
-        public int RouteId { get; private set; }
+        public int JourneyId { get;  }
+        public int Order { get; }
+        public int RouteId { get; }
         public Route Route { get; set; }
 
         public JourneyRoute(int journeyId, int order, int routeId)

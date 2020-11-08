@@ -7,20 +7,23 @@ namespace TransportPlanner.Models
 {
     /// <summary>
     /// Represents a set of predefined routes on a directional journey between ports.
-    /// Client describes a network of predefined routes which this models
+    /// Since the client describes a network of predefined routes, decision taken to
+    /// provision ability to define set journeys that have a network of routes.
+    /// Gives client option to add new journeys/networks in the future.
     /// </summary>
    public class Journey
     {
-        public int Id;
+        public int Id { get; }
 
-        public string Name { get; private set; }
+        public string Name { get; }
 
-        public IList<JourneyRoute> Routes { get; set; }
+        public List<JourneyRoute> Routes { get; }
 
         public Journey(int id, string name)
         {
             Id = id;
             Name = name;
+            Routes = new List<JourneyRoute>();
         }
         
         public int TotalJourneyTime()

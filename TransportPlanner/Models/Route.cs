@@ -5,11 +5,11 @@
     /// </summary>
     public class Route
     {
-        public int Id;
-      
-        public int StartPortId { get; private set; }
-        public int DestinationPortId { get; private set; }
-        public int DaysDuration { get; private set; }
+        public int Id { get; }
+
+        public int StartPortId { get; }
+        public int DestinationPortId { get; }
+        public int DaysDuration { get; }
 
         public Route(int id, int startPortId, int destinationPortId, int daysDuration)
         {

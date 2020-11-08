@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using TransportPlanner.Services;
+using TransportPlanner.Services.JourneyFinder;
 using TransportPlanner.Tests.Fixtures;
 using Xunit;
 using Xunit.Sdk;
@@ -16,12 +17,12 @@ namespace TransportPlanner.Tests
     /// </summary>
     public partial class CalculateShortestJourneyTimeTests : IClassFixture<RoutePlannerFixture>
     {
-        RoutePlannerFixture _fixture;
-        JourneyFinder _journeyFinder;
+        readonly RoutePlannerFixture _fixture;
+        readonly IJourneyFinderHandler _journeyFinder;
         public CalculateShortestJourneyTimeTests(RoutePlannerFixture fixture)
         {
             _fixture = fixture;
-            _journeyFinder = new JourneyFinder(_fixture._context, _fixture._journeyQuery);
+            _journeyFinder = new JourneyFinderHandler(_fixture.Context, _fixture.JourneyQuery);
 
         }
 
@@ -33,20 +34,15 @@ namespace TransportPlanner.Tests
         {
             //Arrange
             var expectedJourneyTime = 8;
-            var journeyTimeReturned = 0;
-
             var homePortId = (int)RoutePlannerFixture.PortsIds.BuenosAires;
             var destinationPortId = (int)RoutePlannerFixture.PortsIds.Liverpool;
 
 
             //Act
             var routesFoundByService = _journeyFinder.FindJourneys(
-             new JourneyFinder.Request()
-             {
-                 StartPortId = homePortId,
-                 DestinationPortId = destinationPortId,
-                 FilterCriteria = new JourneyFinder.FilterCriteria(true, null, null, null)
-             });
+             new Request(homePortId,
+                 destinationPortId,
+                 new FilterCriteria(true, null, null, null)));
 
             //Assert
             Assert.NotNull(routesFoundByService);
@@ -55,8 +51,7 @@ namespace TransportPlanner.Tests
             //Assert that only fastest route is returned
             Assert.Single(routesFoundByService.Journeys);
 
-            journeyTimeReturned = routesFoundByService.Journeys.FirstOrDefault().TotalJourneyTime();
-
+            int journeyTimeReturned = routesFoundByService.Journeys.First().TotalJourneyTime();
             Assert.Equal(expectedJourneyTime, journeyTimeReturned);
         }
 
@@ -68,20 +63,16 @@ namespace TransportPlanner.Tests
         {
             //Arrange
             var expectedJourneyTime = 18;
-            var journeyTimeReturned = 0;
-
             var homePortId = (int)RoutePlannerFixture.PortsIds.NewYork;
             var destinationPortId = (int)RoutePlannerFixture.PortsIds.NewYork;
 
 
             //Act
             var routesFoundByService = _journeyFinder.FindJourneys(
-             new JourneyFinder.Request()
-             {
-                 StartPortId = homePortId,
-                 DestinationPortId = destinationPortId,
-                 FilterCriteria = new JourneyFinder.FilterCriteria(true, null,null,null)
-             });
+             new Request(
+                 homePortId,
+                 destinationPortId, 
+                 new FilterCriteria(true, null,null,null)));
 
             //Assert
             Assert.NotNull(routesFoundByService);
@@ -90,8 +81,7 @@ namespace TransportPlanner.Tests
             //Assert that only fastest route is returned
             Assert.Single(routesFoundByService.Journeys);
 
-            journeyTimeReturned = routesFoundByService.Journeys.FirstOrDefault().TotalJourneyTime();            
-
+            int journeyTimeReturned = routesFoundByService.Journeys.First().TotalJourneyTime();
             Assert.Equal(expectedJourneyTime, journeyTimeReturned);
         }
 
