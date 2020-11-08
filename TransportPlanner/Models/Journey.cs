@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace TransportPlanner.Models
@@ -19,6 +20,11 @@ namespace TransportPlanner.Models
         {
             Id = id;
             Name = name;
+        }
+
+        public int TotalJourneyTime()
+        {
+            return Routes.Sum(rt => rt.Route.DaysDuration);
         }
     }
 }

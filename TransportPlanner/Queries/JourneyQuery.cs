@@ -8,7 +8,10 @@ using TransportPlanner.Models;
 
 namespace TransportPlanner.Queries
 {
-   public class JourneyQuery
+    /// <summary>
+    /// Retrives a Journey and inflates the object with all route information
+    /// </summary>
+   public class JourneyQuery : IJourneyQuery
     {
         private ITransportPlannerContext _context;
         public JourneyQuery(ITransportPlannerContext context)
@@ -16,7 +19,7 @@ namespace TransportPlanner.Queries
             _context = context;
         }
         public Journey GetJourney(int journeyId)
-        {
+        {            
             var journey = _context.Journeys.Where(jt => jt.Id == journeyId).FirstOrDefault();
 
             if(journey == null)
