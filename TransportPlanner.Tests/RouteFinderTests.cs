@@ -28,17 +28,27 @@ namespace TransportPlanner.Tests
         /// </summary>
         [Fact]
         public void Calling_Find_Routes_Matching_Scenario_1_Returns_Correct_Number_Of_Matches()
-        {                        
+        {                     
+            //Arrange
             var maxiumNumberOfRoutes = 2;
             var expectedNumberOfRoutesWith3Steps = 1;
             var calculatedNumberOfRoutesWith3Steps = 0;
 
             var homePortId = (int)RoutePlannerFixture.PortsIds.Liverpool;
             var destinationPortId = (int)RoutePlannerFixture.PortsIds.Liverpool;
+            
+            //Act
+            var routesFoundByService = _journeyFinder.FindJourneys(new JourneyFinder.Request() { 
+                StartPortId = homePortId,
+                DestinationPortId = destinationPortId,
+               FilterCriteria = new JourneyFinder.FilterCriteria(false,null,maxiumNumberOfRoutes, null)
+            });
 
-            var routesFoundByService = _journeyFinder.FindJourneys(new JourneyFinder.Request() { StartPortId = homePortId, DestinationPortId = destinationPortId });
-
-            calculatedNumberOfRoutesWith3Steps = routesFoundByService.Journeys.Where(journey => journey.Routes.Count() <= maxiumNumberOfRoutes).Count();                
+            //Assert            
+            Assert.NotNull(routesFoundByService);
+            Assert.True(routesFoundByService.FoundMatchingJourneys);            
+            
+            calculatedNumberOfRoutesWith3Steps = routesFoundByService.Journeys.Count();                
 
             Assert.Equal(expectedNumberOfRoutesWith3Steps, calculatedNumberOfRoutesWith3Steps);
         }
@@ -56,9 +66,17 @@ namespace TransportPlanner.Tests
             var homePortId = (int)RoutePlannerFixture.PortsIds.BuenosAires;
             var destinationPortId = (int)RoutePlannerFixture.PortsIds.Liverpool;
 
-            var routesFoundByService = _journeyFinder.FindJourneys(new JourneyFinder.Request() { StartPortId = homePortId, DestinationPortId = destinationPortId });
+            var routesFoundByService = _journeyFinder.FindJourneys(new JourneyFinder.Request() {
+                StartPortId = homePortId, 
+                DestinationPortId = destinationPortId,
+                FilterCriteria = new JourneyFinder.FilterCriteria(false, null, null, requiredNumberOfStops)
+            });
 
-            calculatedNumberOfRoutesWith4Steps = routesFoundByService.Journeys.Where(journey => journey.Routes.Count() == requiredNumberOfStops).Count();
+            //Assert
+            Assert.NotNull(routesFoundByService);
+            Assert.True(routesFoundByService.FoundMatchingJourneys);
+
+            calculatedNumberOfRoutesWith4Steps = routesFoundByService.Journeys.Count();
 
             Assert.Equal(expectedNumberOfRoutesWith4Steps, calculatedNumberOfRoutesWith4Steps);
         }
@@ -76,7 +94,15 @@ namespace TransportPlanner.Tests
             var homePortId = (int)RoutePlannerFixture.PortsIds.Liverpool;
             var destinationPortId = (int)RoutePlannerFixture.PortsIds.Liverpool;
    
-            var routesFoundByService = _journeyFinder.FindJourneys(new JourneyFinder.Request() { StartPortId = homePortId, DestinationPortId = destinationPortId });
+            var routesFoundByService = _journeyFinder.FindJourneys(new JourneyFinder.Request() { 
+                StartPortId = homePortId,
+                DestinationPortId = destinationPortId,
+                FilterCriteria = new JourneyFinder.FilterCriteria(false, maximumJourneyTime, null, null)
+            });
+
+            //Assert
+            Assert.NotNull(routesFoundByService);
+            Assert.True(routesFoundByService.FoundMatchingJourneys);
 
             calculatedNumberOfRoutesLessThan25Days = routesFoundByService.Journeys.Where(journey => journey.TotalJourneyTime() <= maximumJourneyTime).Count();
                   

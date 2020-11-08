@@ -63,8 +63,9 @@ namespace TransportPlanner.Tests
             //Act
             var response = _journeyTimeCalculator.CalculateJourneyTime(journeyTimeRequest);
 
-
             //Assert
+            Assert.NotNull(response);
+            Assert.True(response.IsValidRoute);
             Assert.Equal(expectedJourneyTime, response.JourneyTime);
 
         }
@@ -90,6 +91,8 @@ namespace TransportPlanner.Tests
 
 
             //Assert
+            Assert.NotNull(response);
+            Assert.True(response.IsValidRoute);
             Assert.Equal(expectedJourneyTime, response.JourneyTime);
 
         }
@@ -110,6 +113,7 @@ namespace TransportPlanner.Tests
             var response = _journeyTimeCalculator.CalculateJourneyTime(journeyTimeRequest);
 
             //Assert
+            Assert.NotNull(response);
             Assert.False(response.IsValidRoute);
         }
 

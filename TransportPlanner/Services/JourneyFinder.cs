@@ -75,24 +75,25 @@ namespace TransportPlanner.Services
 
             if (filterCriteria.ApplyMaximumJourneyTime.HasValue)
             {
-                var quickestJourney = response.Journeys.OrderBy(jr => jr.TotalJourneyTime() <= filterCriteria.ApplyMaximumJourneyTime).First();
+                var journeyUnderMaximumTime = response.Journeys.Where(jr => jr.TotalJourneyTime() <= filterCriteria.ApplyMaximumJourneyTime).ToList();
                 response.Journeys.Clear();
-                response.Journeys.Add(quickestJourney);
+                response.Journeys.AddRange(journeyUnderMaximumTime);
             }
 
             if (filterCriteria.ApplyMaximumNumberOfStops.HasValue)
             {
-                var quickestJourney = response.Journeys.OrderBy(jr => jr.Routes.Count() <= filterCriteria.ApplyMaximumNumberOfStops).First();
+                var journeysUnderMaximumStops = response.Journeys.Where(jr => jr.Routes.Count() <= filterCriteria.ApplyMaximumNumberOfStops).ToList();
                 response.Journeys.Clear();
-                response.Journeys.Add(quickestJourney);
+                response.Journeys.AddRange(journeysUnderMaximumStops);
             }
 
             if (filterCriteria.ApplyNumberOfStops.HasValue)
             {
-                var quickestJourney = response.Journeys.OrderBy(jr => jr.Routes.Count() == filterCriteria.ApplyNumberOfStops).First();
+                var journeysMatchingNumberOfStops = response.Journeys.Where(jr => jr.Routes.Count() == filterCriteria.ApplyNumberOfStops).ToList();
                 response.Journeys.Clear();
-                response.Journeys.Add(quickestJourney);
+                response.Journeys.AddRange(journeysMatchingNumberOfStops);
             }
+
         }
 
         public class Request

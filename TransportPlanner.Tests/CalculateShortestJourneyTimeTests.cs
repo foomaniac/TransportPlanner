@@ -45,11 +45,13 @@ namespace TransportPlanner.Tests
              {
                  StartPortId = homePortId,
                  DestinationPortId = destinationPortId,
-                 FilterCriteria = new JourneyFinder.FilterCriteria(true, null)
+                 FilterCriteria = new JourneyFinder.FilterCriteria(true, null, null, null)
              });
 
             //Assert
             Assert.NotNull(routesFoundByService);
+            Assert.True(routesFoundByService.FoundMatchingJourneys);
+
             //Assert that only fastest route is returned
             Assert.Single(routesFoundByService.Journeys);
 
@@ -64,6 +66,7 @@ namespace TransportPlanner.Tests
         [Fact]
         public void Calling_Calculate_Shortest_Journey_Time_For_Route_2_Returns_18_days()
         {
+            //Arrange
             var expectedJourneyTime = 18;
             var journeyTimeReturned = 0;
 
@@ -77,11 +80,13 @@ namespace TransportPlanner.Tests
              {
                  StartPortId = homePortId,
                  DestinationPortId = destinationPortId,
-                 FilterCriteria = new JourneyFinder.FilterCriteria(true, null)
+                 FilterCriteria = new JourneyFinder.FilterCriteria(true, null,null,null)
              });
 
             //Assert
             Assert.NotNull(routesFoundByService);
+            Assert.True(routesFoundByService.FoundMatchingJourneys);
+
             //Assert that only fastest route is returned
             Assert.Single(routesFoundByService.Journeys);
 

@@ -39,6 +39,7 @@ namespace TransportPlanner.Services
                 }
 
                 //Valid route, so add this route to the total journey time
+                response.IsValidRoute = true;
                 response.JourneyTime += matchingRoute.DaysDuration;
             }
 
