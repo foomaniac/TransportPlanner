@@ -9,44 +9,45 @@ using TransportPlanner.Models;
 namespace TransportPlanner.Queries
 {
     /// <summary>
-    /// Retrives a Journey and inflates the object with all route information
+    /// Retrieves a Journey and inflates the object with all route information
+    /// Depending on chosen persistance model would look to EF to handle relationships or
+    /// look to repositories as an added abstraction
     /// </summary>
-   public class JourneyQuery : IJourneyQuery
+    public class JourneyQuery : IJourneyQuery
     {
-        private ITransportPlannerContext _context;
+        private readonly ITransportPlannerContext _context;
         public JourneyQuery(ITransportPlannerContext context)
         {
             _context = context;
         }
         public Journey GetJourney(int journeyId)
-        {            
-            var journey = _context.Journeys.Where(jt => jt.Id == journeyId).FirstOrDefault();
+        {
+            var journey = _context.Journeys.FirstOrDefault(jt => jt.Id == journeyId);
 
-            if(journey == null)
+            if (journey == null)
             {
-                throw new ApplicationException($"Journey not found for journey id {journeyId}");
+                throw new ArgumentException($"Journey not found for journey id {journeyId}");
             }
 
             //Inflate journey with routes
-            journey.Routes = GetRoutes(journeyId);
+            GetRoutes(journey);
 
             return journey;
         }
-        private IList<JourneyRoute> GetRoutes(int journeyId)
+        private void GetRoutes(Journey journey)
         {
-            var routesInJourney = new List<JourneyRoute>();
+            journey.Routes.Clear();
+            var availableRoutesInJourney = _context.JourneyRoutes.Where(route => route.JourneyId == journey.Id).ToList();
 
-            var availableRoutesInJourney = _context.JourneyRoutes.Where(route => route.JourneyId == journeyId);
-
-            foreach(var journeyRoute in availableRoutesInJourney)
+            foreach (var journeyRoute in availableRoutesInJourney)
             {
-                var newJourneyRoute = new JourneyRoute(journeyId, journeyRoute.Order, journeyRoute.RouteId);
-                newJourneyRoute.Route = _context.Routes.FirstOrDefault(rt => rt.Id == journeyRoute.RouteId);
+                var newJourneyRoute = new JourneyRoute(journey.Id, journeyRoute.Order, journeyRoute.RouteId)
+                {
+                    Route = _context.Routes.FirstOrDefault(rt => rt.Id == journeyRoute.RouteId)
+                };
 
-                routesInJourney.Add(newJourneyRoute);
+                journey.Routes.Add(newJourneyRoute);
             }
-
-            return routesInJourney;
         }
 
     }

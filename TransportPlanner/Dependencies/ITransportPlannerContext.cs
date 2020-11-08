@@ -10,11 +10,11 @@ namespace TransportPlanner.Dependencies
     /// Used lists to reduce dependency on EntityFramework DbSets
     /// </summary>
     public interface ITransportPlannerContext
-    {       
-        public IList<Port> Ports { get; set; }
-        public IList<Route> Routes { get; set; }
-        public IList<Journey> Journeys { get; set; }
-        public IList<JourneyRoute> JourneyRoutes { get; set; }
+    {
+        public IList<Port> Ports { get; }
+        public IList<Route> Routes { get; }
+        public IList<Journey> Journeys { get; }
+        public IList<JourneyRoute> JourneyRoutes { get; }
 
     }
 }

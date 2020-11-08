@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using TransportPlanner.Models;
 using TransportPlanner.Services;
+using TransportPlanner.Services.JourneyTimeCalculator;
 using TransportPlanner.Tests.Fixtures;
 using Xunit;
 
@@ -18,12 +19,12 @@ namespace TransportPlanner.Tests
     /// </summary>
     public class CalculateJourneyTimeTests : IClassFixture<RoutePlannerFixture>
     {
-        RoutePlannerFixture _fixture;
-        JourneyTimeCalculator _journeyTimeCalculator;
+        readonly RoutePlannerFixture _fixture;
+        readonly IJourneyTimeCalculatorHandler _journeyTimeCalculator;
         public CalculateJourneyTimeTests(RoutePlannerFixture fixture)
         {
             _fixture = fixture;
-            _journeyTimeCalculator = new JourneyTimeCalculator(_fixture._context);
+            _journeyTimeCalculator = new JourneyTimeCalculatorHandler(_fixture.Context);
         }
 
         /// <summary>
@@ -35,9 +36,9 @@ namespace TransportPlanner.Tests
             //Arrange
             var expectedJourneyTime = 10;
 
-            var journeyTimeRequest = new JourneyTimeCalculator.Request();
-            journeyTimeRequest.Routes.Add(new JourneyTimeCalculator.RequestRoute((int)RoutePlannerFixture.PortsIds.BuenosAires, (int)RoutePlannerFixture.PortsIds.NewYork));
-            journeyTimeRequest.Routes.Add(new JourneyTimeCalculator.RequestRoute((int)RoutePlannerFixture.PortsIds.NewYork, (int)RoutePlannerFixture.PortsIds.Liverpool));
+            var journeyTimeRequest = new Request();
+            journeyTimeRequest.Routes.Add(new RequestRoute((int)RoutePlannerFixture.PortsIds.BuenosAires, (int)RoutePlannerFixture.PortsIds.NewYork));
+            journeyTimeRequest.Routes.Add(new RequestRoute((int)RoutePlannerFixture.PortsIds.NewYork, (int)RoutePlannerFixture.PortsIds.Liverpool));
             
             //Act
             var response = _journeyTimeCalculator.CalculateJourneyTime(journeyTimeRequest);
@@ -56,9 +57,9 @@ namespace TransportPlanner.Tests
             var expectedJourneyTime = 8;
 
             //Act
-            var journeyTimeRequest = new JourneyTimeCalculator.Request();
-            journeyTimeRequest.Routes.Add(new JourneyTimeCalculator.RequestRoute( (int)RoutePlannerFixture.PortsIds.BuenosAires, (int)RoutePlannerFixture.PortsIds.Casablanca));
-            journeyTimeRequest.Routes.Add(new JourneyTimeCalculator.RequestRoute( (int)RoutePlannerFixture.PortsIds.Casablanca, (int)RoutePlannerFixture.PortsIds.Liverpool));
+            var journeyTimeRequest = new Request();
+            journeyTimeRequest.Routes.Add(new RequestRoute( (int)RoutePlannerFixture.PortsIds.BuenosAires, (int)RoutePlannerFixture.PortsIds.Casablanca));
+            journeyTimeRequest.Routes.Add(new RequestRoute( (int)RoutePlannerFixture.PortsIds.Casablanca, (int)RoutePlannerFixture.PortsIds.Liverpool));
 
             //Act
             var response = _journeyTimeCalculator.CalculateJourneyTime(journeyTimeRequest);
@@ -80,11 +81,11 @@ namespace TransportPlanner.Tests
             var expectedJourneyTime = 19;            
 
             //Act
-            var journeyTimeRequest = new JourneyTimeCalculator.Request();
-            journeyTimeRequest.Routes.Add(new JourneyTimeCalculator.RequestRoute((int)RoutePlannerFixture.PortsIds.BuenosAires, (int)RoutePlannerFixture.PortsIds.CapeTown));
-            journeyTimeRequest.Routes.Add(new JourneyTimeCalculator.RequestRoute((int)RoutePlannerFixture.PortsIds.CapeTown, (int)RoutePlannerFixture.PortsIds.NewYork));
-            journeyTimeRequest.Routes.Add(new JourneyTimeCalculator.RequestRoute((int)RoutePlannerFixture.PortsIds.NewYork, (int)RoutePlannerFixture.PortsIds.Liverpool));
-            journeyTimeRequest.Routes.Add(new JourneyTimeCalculator.RequestRoute((int)RoutePlannerFixture.PortsIds.Liverpool, (int)RoutePlannerFixture.PortsIds.Casablanca));
+            var journeyTimeRequest = new Request();
+            journeyTimeRequest.Routes.Add(new RequestRoute((int)RoutePlannerFixture.PortsIds.BuenosAires, (int)RoutePlannerFixture.PortsIds.CapeTown));
+            journeyTimeRequest.Routes.Add(new RequestRoute((int)RoutePlannerFixture.PortsIds.CapeTown, (int)RoutePlannerFixture.PortsIds.NewYork));
+            journeyTimeRequest.Routes.Add(new RequestRoute((int)RoutePlannerFixture.PortsIds.NewYork, (int)RoutePlannerFixture.PortsIds.Liverpool));
+            journeyTimeRequest.Routes.Add(new RequestRoute((int)RoutePlannerFixture.PortsIds.Liverpool, (int)RoutePlannerFixture.PortsIds.Casablanca));
 
             //Act
             var response = _journeyTimeCalculator.CalculateJourneyTime(journeyTimeRequest);
@@ -104,9 +105,9 @@ namespace TransportPlanner.Tests
         public void Calling_Calculate_Journey_Time_For_Route_4_Returns_Invalid_Route_Response()
         {
             //Arrange            
-            var journeyTimeRequest = new JourneyTimeCalculator.Request();
-            journeyTimeRequest.Routes.Add(new JourneyTimeCalculator.RequestRoute((int)RoutePlannerFixture.PortsIds.BuenosAires, (int)RoutePlannerFixture.PortsIds.CapeTown));
-            journeyTimeRequest.Routes.Add(new JourneyTimeCalculator.RequestRoute((int)RoutePlannerFixture.PortsIds.CapeTown, (int)RoutePlannerFixture.PortsIds.Casablanca));
+            var journeyTimeRequest = new Request();
+            journeyTimeRequest.Routes.Add(new RequestRoute((int)RoutePlannerFixture.PortsIds.BuenosAires, (int)RoutePlannerFixture.PortsIds.CapeTown));
+            journeyTimeRequest.Routes.Add(new RequestRoute((int)RoutePlannerFixture.PortsIds.CapeTown, (int)RoutePlannerFixture.PortsIds.Casablanca));
 
 
             //Act
