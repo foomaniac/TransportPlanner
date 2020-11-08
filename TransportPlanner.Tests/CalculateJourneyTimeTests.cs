@@ -27,25 +27,6 @@ namespace TransportPlanner.Tests
         }
 
         /// <summary>
-        /// Invalid Route: Buenos Aires  Capetown  Casablanca
-        /// </summary>
-        [Fact]
-        public void Calling_Calculate_Journey_Time_For_Route_4_Returns_Invalid_Route_Response()
-        {
-            //Arrange            
-            var journeyTimeRequest = new JourneyTimeCalculator.Request();
-            journeyTimeRequest.Routes.Add(new JourneyTimeCalculator.RequestRoute((int)RoutePlannerFixture.PortsIds.BuenosAires, (int)RoutePlannerFixture.PortsIds.CapeTown));
-            journeyTimeRequest.Routes.Add(new JourneyTimeCalculator.RequestRoute((int)RoutePlannerFixture.PortsIds.CapeTown, (int)RoutePlannerFixture.PortsIds.Casablanca));
-
-
-            //Act
-            var response = _journeyTimeCalculator.CalculateJourneyTime(journeyTimeRequest);
-                      
-            //Assert
-            Assert.False(response.IsValidRoute);
-        }
-
-        /// <summary>
         /// Route 1.  Buenos Aires  New York  Liverpool = 10 Days
         /// </summary>
         [Fact]
@@ -113,6 +94,24 @@ namespace TransportPlanner.Tests
 
         }
 
+        /// <summary>
+        /// Invalid Route: Buenos Aires  Capetown  Casablanca
+        /// </summary>
+        [Fact]
+        public void Calling_Calculate_Journey_Time_For_Route_4_Returns_Invalid_Route_Response()
+        {
+            //Arrange            
+            var journeyTimeRequest = new JourneyTimeCalculator.Request();
+            journeyTimeRequest.Routes.Add(new JourneyTimeCalculator.RequestRoute((int)RoutePlannerFixture.PortsIds.BuenosAires, (int)RoutePlannerFixture.PortsIds.CapeTown));
+            journeyTimeRequest.Routes.Add(new JourneyTimeCalculator.RequestRoute((int)RoutePlannerFixture.PortsIds.CapeTown, (int)RoutePlannerFixture.PortsIds.Casablanca));
+
+
+            //Act
+            var response = _journeyTimeCalculator.CalculateJourneyTime(journeyTimeRequest);
+
+            //Assert
+            Assert.False(response.IsValidRoute);
+        }
 
     }
 }

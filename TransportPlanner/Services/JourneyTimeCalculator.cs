@@ -8,6 +8,11 @@ using TransportPlanner.Models;
 
 namespace TransportPlanner.Services
 {
+    /// <summary>
+    /// The client has described having a number of ports, and predefined available routes between them.
+    /// The client has expressed a need to test journey times of a different route combinations, based on if the route between ports is valid.
+    /// This simple service allows the client to request the journey time by explicitly providing the routes a journey may utilise.
+    /// </summary>
    public class JourneyTimeCalculator
     {
         private ITransportPlannerContext _context;
@@ -21,16 +26,19 @@ namespace TransportPlanner.Services
         {
             var response = new Response();
 
-            foreach (var wayPoint in request.Routes)
+            foreach (var route in request.Routes)
             {
-                var matchingRoute = _context.Routes.FirstOrDefault(wp => wp.StartPortId == wayPoint.StartPortId && wp.DestinationPortId == wayPoint.DestinationPortId);
-                                
+                //Do we have a route that matches the request?
+                var matchingRoute = _context.Routes.FirstOrDefault(wp => wp.StartPortId == route.StartPortId && wp.DestinationPortId == route.DestinationPortId);                                
+               
                 if (matchingRoute == null)
                 {
+                    //Report that this is not a valid route
                     response.IsValidRoute = false;
                     break;
                 }
 
+                //Valid route, so add this route to the total journey time
                 response.JourneyTime += matchingRoute.DaysDuration;
             }
 
@@ -48,14 +56,12 @@ namespace TransportPlanner.Services
 
         public class RequestRoute
         {
-
             public RequestRoute(int startPortId, int destinationPortId)
             {
                 StartPortId = startPortId;
                 DestinationPortId = destinationPortId;
             }
 
-            public int Step { get; set; }
             public int StartPortId { get; set; }
 
             public int DestinationPortId { get; set; }
