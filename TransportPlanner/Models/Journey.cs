@@ -1,34 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Text;
 
 namespace TransportPlanner.Models
 {
     /// <summary>
-    /// Represents a predefined set of routes from start to end
+    /// Represents a set of predefined routes on a directional journey between ports.
     /// </summary>
-    public class Journey
+   public class Journey
     {
-        /// <summary>
-        /// Network Groups Journeys 
-        /// </summary>
-        public int NetworkId { get; private set; }
-        public int Order { get; private set; }
-        public int RouteId { get; private set; }
-        public IList<Route> Routes { get; private set; }
+        public int Id;
 
-        public Journey(int networkId, int order, int routeId)
-        {
-            NetworkId = networkId;
-            Order = order;
-            RouteId = routeId;
-        }
+        public string Name { get; private set; }
 
-        public int TotalJourneyTime()
+        public IList<JourneyRoute> Routes { get; set; }
+
+        public Journey(int id, string name)
         {
-            return Routes.Sum(rt => rt.DaysDuration);
+            Id = id;
+            Name = name;
         }
     }
 }

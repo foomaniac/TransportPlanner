@@ -10,7 +10,7 @@ using Xunit;
 namespace TransportPlanner.Tests
 {
     /// <summary>
-    /// What is the total journey time for the following direct routes (your model should indicate if the journey is invalid):    
+    /// What is the total journey time for the following direct routes (Model should indicate if the journey is invalid):    
     /// Route 1.  Buenos Aires  New York  Liverpool = 10 Days
     /// Route 2.  Buenos Aires  Casablanca  Liverpool = 8 Days
     /// Route 3.  Buenos Aires  Capetown  New York  Liverpool  Casablanca = 19 Days

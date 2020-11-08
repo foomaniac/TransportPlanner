@@ -35,28 +35,28 @@ namespace TransportPlanner.Tests
 
 
             //Let's get all journeys that start with our home port 
-            var routesMatchingStart = from journey in _fixture._context.Journeys
+            var routesMatchingStart = from journey in _fixture._context.JourneyRoutes
                                       join route in _fixture._context.Routes on journey.RouteId equals route.Id
                                       where route.StartPortId == homePortId && journey.Order == 0
-                                      select new { journey.NetworkId };
+                                      select new { journey.JourneyId };
 
             //Get all routes that have a stop off at our destination
-            var routesMatchingEnd = from journey in _fixture._context.Journeys
+            var routesMatchingEnd = from journey in _fixture._context.JourneyRoutes
                                     join route in _fixture._context.Routes on journey.RouteId equals route.Id
                                     where route.DestinationPortId == destinationPortId
-                                    select new { journey.NetworkId };
+                                    select new { journey.JourneyId };
 
 
-            var availableJourneysWithDuration = (from journey in _fixture._context.Journeys
-                                                 join matchingStartRoutes in routesMatchingStart on journey.NetworkId equals matchingStartRoutes.NetworkId
-                                                 join matchingEndRoutes in routesMatchingEnd on journey.NetworkId equals matchingEndRoutes.NetworkId
+            var availableJourneysWithDuration = (from journey in _fixture._context.JourneyRoutes
+                                                 join matchingStartRoutes in routesMatchingStart on journey.JourneyId equals matchingStartRoutes.JourneyId
+                                                 join matchingEndRoutes in routesMatchingEnd on journey.JourneyId equals matchingEndRoutes.JourneyId
                                                  join route in _fixture._context.Routes on journey.RouteId equals route.Id
-                                                 orderby journey.NetworkId, journey.Order
-                                                 select new { journey.NetworkId, route.DaysDuration }).ToList();
+                                                 orderby journey.JourneyId, journey.Order
+                                                 select new { journey.JourneyId, route.DaysDuration }).ToList();
 
 
             var quickestJourneyTime = from matchingRoutes in availableJourneysWithDuration
-                                      group matchingRoutes by matchingRoutes.NetworkId into routeJourneyTimes
+                                      group matchingRoutes by matchingRoutes.JourneyId into routeJourneyTimes
                                       orderby routeJourneyTimes.Sum(rjt => rjt.DaysDuration)
                                       select new { JourneyTime = routeJourneyTimes.Sum(rjt => rjt.DaysDuration) };
 
@@ -80,29 +80,29 @@ namespace TransportPlanner.Tests
 
 
             //Let's get all journeys that start with our home port 
-            var routesMatchingStart = from journey in _fixture._context.Journeys
+            var routesMatchingStart = from journey in _fixture._context.JourneyRoutes
                                       join route in _fixture._context.Routes on journey.RouteId equals route.Id
                                       where route.StartPortId == homePortId && journey.Order == 0
-                                      select new { journey.NetworkId };
+                                      select new { journey.JourneyId };
 
             //Get all routes that have a stop off at our destination
-            var routesMatchingEnd = from journey in _fixture._context.Journeys
+            var routesMatchingEnd = from journey in _fixture._context.JourneyRoutes
                                     join route in _fixture._context.Routes on journey.RouteId equals route.Id
                                     where route.DestinationPortId == destinationPortId
-                                    select new { journey.NetworkId };
+                                    select new { journey.JourneyId };
 
             //Filter the available journeys based on ones matching both lists
             //selecting the journey network Id and Duration
-            var availableJourneysWithRoutes = (from journey in _fixture._context.Journeys
-                                               join matchingStartRoutes in routesMatchingStart on journey.NetworkId equals matchingStartRoutes.NetworkId
-                                               join matchingEndRoutes in routesMatchingEnd on journey.NetworkId equals matchingEndRoutes.NetworkId
+            var availableJourneysWithRoutes = (from journey in _fixture._context.JourneyRoutes
+                                               join matchingStartRoutes in routesMatchingStart on journey.JourneyId equals matchingStartRoutes.JourneyId
+                                               join matchingEndRoutes in routesMatchingEnd on journey.JourneyId equals matchingEndRoutes.JourneyId
                                                join route in _fixture._context.Routes on journey.RouteId equals route.Id
-                                               orderby journey.NetworkId, journey.Order
-                                               select new { journey.NetworkId, route.DaysDuration }).ToList();
+                                               orderby journey.JourneyId, journey.Order
+                                               select new { journey.JourneyId, route.DaysDuration }).ToList();
 
 
             var quickestJourneyTime = from matchingRoutes in availableJourneysWithRoutes
-                                      group matchingRoutes by matchingRoutes.NetworkId into routeJourneyTimes
+                                      group matchingRoutes by matchingRoutes.JourneyId into routeJourneyTimes
                                       orderby routeJourneyTimes.Sum(rjt => rjt.DaysDuration)
                                       select new { JourneyTime = routeJourneyTimes.Sum(rjt => rjt.DaysDuration) };
 
