@@ -46,9 +46,7 @@ namespace TransportPlanner.Tests
             //Assert            
             Assert.NotNull(routesFoundByService);
             Assert.True(routesFoundByService.FoundMatchingJourneys);
-
-            int calculatedNumberOfRoutesWith3Steps = routesFoundByService.Journeys.Count();
-            Assert.Equal(expectedNumberOfRoutesWith3Steps, calculatedNumberOfRoutesWith3Steps);
+            Assert.Equal(expectedNumberOfRoutesWith3Steps, routesFoundByService.Journeys.Count());
         }
 
         /// <summary>
@@ -71,9 +69,7 @@ namespace TransportPlanner.Tests
             //Assert
             Assert.NotNull(routesFoundByService);
             Assert.True(routesFoundByService.FoundMatchingJourneys);
-
-            int calculatedNumberOfRoutesWith4Steps = routesFoundByService.Journeys.Count();
-            Assert.Equal(expectedNumberOfRoutesWith4Steps, calculatedNumberOfRoutesWith4Steps);
+            Assert.Equal(expectedNumberOfRoutesWith4Steps, routesFoundByService.Journeys.Count());
         }
 
         /// <summary>
@@ -96,7 +92,7 @@ namespace TransportPlanner.Tests
             //Assert
             Assert.NotNull(routesFoundByService);
             Assert.True(routesFoundByService.FoundMatchingJourneys);
-            Assert.Equal(expectedNumberOfRoutesWith3Steps, routesFoundByService.Journeys.Count);
+            Assert.Equal(expectedNumberOfRoutesWith3Steps, routesFoundByService.Journeys.Count());
         }
 
     }
