@@ -10,6 +10,7 @@ namespace TransportPlanner.Services
 {
     /// <summary>
     /// Service will search and return available predefined journeys that match a required start and destination port
+    /// Also accepts filter criteria to further limit search
     /// </summary>
     public class JourneyFinder
     {

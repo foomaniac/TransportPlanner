@@ -7,6 +7,7 @@ namespace TransportPlanner.Models
 {
     /// <summary>
     /// Represents a set of predefined routes on a directional journey between ports.
+    /// Client describes a network of predefined routes which this models
     /// </summary>
    public class Journey
     {
@@ -21,7 +22,7 @@ namespace TransportPlanner.Models
             Id = id;
             Name = name;
         }
-
+        
         public int TotalJourneyTime()
         {
             return Routes.Sum(rt => rt.Route.DaysDuration);
