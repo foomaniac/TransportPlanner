@@ -1,8 +1,11 @@
 ﻿namespace TransportPlanner.Models
 {
+    /// <summary>
+    /// Models a predefined route between two ports. Client expressed that routes are directional.
+    /// </summary>
     public class Route
     {
-        public int Id { get; private set; }
+        public int Id;
       
         public int StartPortId { get; private set; }
         public int DestinationPortId { get; private set; }

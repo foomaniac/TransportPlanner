@@ -11,5 +11,7 @@ namespace TransportPlanner.Context
         public IList<Port> Ports { get; set; }
         public IList<Route> Routes { get; set; }
         public IList<Journey> Journeys { get; set; }
+        public IList<JourneyRoute> JourneyRoutes { get; set; }
+
     }
 }
